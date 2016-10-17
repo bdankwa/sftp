@@ -3,7 +3,7 @@ BIN_DIR = bin/
 SERVER_DIR = ./
 COMMON_DIR = ../
 
-SERVER_SRC = $(SERVER_DIR)SFTPServer.java $(SERVER_DIR)SFTPWorker.java
+SERVER_SRC = $(SERVER_DIR)SFTPServer.java $(SERVER_DIR)SFTPWorker.java $(SERVER_DIR)UserAccount.java
 
 COMMON_SRC = $(COMMON_DIR)SFTPFile.java
 

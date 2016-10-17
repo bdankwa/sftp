@@ -3,7 +3,7 @@ BIN_DIR = bin/
 CLIENT_DIR = ./
 COMMON_DIR = ../
 
-CLIENT_SRC = $(CLIENT_DIR)SFTPClient.java
+CLIENT_SRC = $(CLIENT_DIR)SFTPClient.java $(CLIENT_DIR)SFTPShell.java
 
 COMMON_SRC = $(COMMON_DIR)SFTPFile.java
 

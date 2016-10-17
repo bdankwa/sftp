@@ -12,13 +12,10 @@ public class SFTPClient {
 
 		try{
 			Socket socket = new Socket(serverAddress, 32011);
-			// TODO Request for files
-			// Read files from socket stream
-			// Decrypt files
-			// write files to disk
-			
+			SFTPShell shell = new SFTPShell(socket);
+			shell.run();			
 		}catch(IOException  e){
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
