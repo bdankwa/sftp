@@ -21,4 +21,4 @@ default: classes
 classes: $(CLASSES:.java=.class)
 
 clean:
-	rm -fr $(BIN_DIR)sftp
+	rm -fr $(BIN_DIR)sftp/*.class $(BIN_DIR)sftp/server/*.class

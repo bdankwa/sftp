@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
 
+import sftp.SFTPFile;
 import sftp.SFTPState;
 import sftp.SFTPState.sftp_state;
 
@@ -16,10 +18,12 @@ public class SFTPShell {
 	private SFTPState st;
 	private BufferedReader   in;
 	private PrintWriter   out;
+	private SFTPFile downloadFiles;
 	
 	public SFTPShell(Socket sock){
 		this.socket = sock;
 		st = new SFTPState();
+		downloadFiles = new SFTPFile();
 		try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -70,7 +74,11 @@ public class SFTPShell {
 							System.out.print("Usage:");
 						}
 						else{
-							processCommand(command);
+							if(processCommand(command)){
+								// files downloaded successfully, terminate.
+								closeIOs();
+								break;
+							}
 						}							
 					}
 					else{
@@ -105,7 +113,7 @@ public class SFTPShell {
 				out.println(command);
 				System.out.print("Client sent register command..");
 				try {
-					if(in.readLine().contains("login")){
+					if(in.readLine().contains("LOGIN")){
 						st.state = sftp_state.LOGIN;
 						status = true;
 						System.out.print("Client received login command..");
@@ -133,12 +141,13 @@ public class SFTPShell {
 				// if ACK move to download, set status to true
 				out.println(command);
 				try {
-					if(in.readLine().contains("download")){
+					if(in.readLine().contains("DOWNLOAD")){
 						st.state = sftp_state.DOWNLOAD;
 						status = true;
 					}
 					else{
 						st.state = sftp_state.LOGIN;
+						System.out.println("Authentication failed on server, please try again");
 						status = false;
 					}
 				} catch (IOException e) {
@@ -156,13 +165,37 @@ public class SFTPShell {
 			break;
 		case DOWNLOAD :
 			if(command.contains("download")){
+				List<String> validFiles = null;
+				List<String> invalidFiles = null;
+				List<String> corruptFiles = null;
+				
 				//TODO send command to server
 				// Receive ACK
 				// Take action based on ACK
 				// if all good set status to true
 				// stay in download until quit.
-				st.state = sftp_state.DOWNLOAD;
-				
+				out.println(command);				
+
+				if(downloadFiles.receive(socket)){
+					//TODO 
+					validFiles = downloadFiles.getValidFileNames(command.substring(9));
+					invalidFiles = downloadFiles.getInvalidFileNames();
+					if(validFiles == null || invalidFiles != null){
+						// invalid file, print
+						System.out.print("Error: the following files do not exist on server : ");
+						for(String s : invalidFiles){
+							System.out.print(s + " ");
+						}
+						status = false;
+					}
+					status = true;
+				}
+				else{ // Corrupt file
+					corruptFiles = downloadFiles.getCorruptFileNames();
+					// TODO Retry for a couple of times
+					//st.state = sftp_state.DOWNLOAD;
+					
+				}				
 			}
 			else{
 				System.out.println("You're already logged in, you can download files now.");
@@ -172,9 +205,19 @@ public class SFTPShell {
 			
 		
 		}
-
 		
 		return status;
+	}
+	
+	private void closeIOs(){
+		try {
+			in.close();
+			out.close();
+			socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
