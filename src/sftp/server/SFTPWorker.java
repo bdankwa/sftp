@@ -48,6 +48,7 @@ public class SFTPWorker extends Thread{
 					System.out.println("SENT LOGIN to client.");
 				}
 				else if(clientCommand.contains("login")){
+					System.out.println("about to authenticate");
 					String[] userPass = clientCommand.split(" ");
 					//process login
 					// if successful, send DOWNLOAD
@@ -55,8 +56,12 @@ public class SFTPWorker extends Thread{
 						out.println("DOWNLOAD");
 						
 						file = new SFTPFile();
-					}						
-					System.out.println("SENT DOWNLOAD to client.");
+						System.out.println("SENT DOWNLOAD to client.");
+					}
+					else{
+						out.println("AUTH_FAILED");
+					}
+
 				}
 				else if(clientCommand.contains("download")){
 					// process download

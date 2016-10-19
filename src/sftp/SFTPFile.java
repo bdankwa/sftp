@@ -18,6 +18,12 @@ public class SFTPFile {
 	public boolean transmit(Socket socket, List<String> fileNames){
 		
 		// Encrypt file and transmit on socket
+		for(String s: fileNames){
+			
+			System.out.println("Server: sent : " + s + " to client");
+			validFileNames.add(s);
+			
+		}
 		
 		return true;
 	}
@@ -25,6 +31,8 @@ public class SFTPFile {
 	public boolean receive(Socket socket){
 		
 		// Read file from socket and decrypt
+		
+		System.out.println("Cleint: recevived files");
 		
 		curruptFiles = null;
 		

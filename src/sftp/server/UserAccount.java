@@ -1,9 +1,12 @@
 package sftp.server;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -12,7 +15,7 @@ import java.util.Map;
 
 public class UserAccount {
 	private BufferedReader in ;
-	private PrintWriter out ;
+	private BufferedWriter out ;
 	
 	public UserAccount(){    
 		
@@ -21,17 +24,16 @@ public class UserAccount {
 	boolean addUser(String username, String password){
 		boolean returnVal = true;
 		
-		try {
-			in = new BufferedReader(new InputStreamReader(new FileInputStream("system")));
-			out = new PrintWriter(new FileOutputStream("system"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
+		openIOWrite();
 		
 		synchronized(this){			
-			out.println(username + " " + password);			
-			closeIO(); 
+			try {
+				out.write(username + " " + password);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+			closeIOWrite(); 
 		}
 		
 		return returnVal;
@@ -48,35 +50,58 @@ public class UserAccount {
         String line;
         String[] credentials;
         
-		try {
-			in = new BufferedReader(new InputStreamReader(new FileInputStream("system")));
-			out = new PrintWriter(new FileOutputStream("system"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
+        openIORead();
         
         try {
 			while((line = in.readLine()) != null){
 				credentials = line.split(" "); 
+				System.out.println("Account cred : " + credentials[0] + " " + credentials[1]);
 				if(credentials[0].equals(username) && credentials[1].equals(password)){
 					returnVal = true;
 					break;
 				}
 			}
+			System.out.println("Account input : " + username + " " + password);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         
-        closeIO();            
+        closeIORead();            
 
 		return returnVal;
 	}
 	
-	private void closeIO(){
+	private void openIORead(){
+		try {
+			in = new BufferedReader(new FileReader("system"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	
+	private void openIOWrite(){
+		
+		try {
+			out = new BufferedWriter(new FileWriter("system"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	private void closeIORead(){
         try {
 			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}   
+	}
+	
+	private void closeIOWrite(){
+        try {
 			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

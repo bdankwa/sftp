@@ -62,16 +62,16 @@ public class SFTPShell {
 					else if(command.contains("login")){
 						String[] arguments = command.split(" ");
 						if(arguments.length != 3){
-							System.out.print("Usage:");
+							System.out.println("Usage:");
 						}
 						else{
 							processCommand(command);
 						}							
 					}
-					else if(command.contains("donwload")){
+					else if(command.contains("download")){
 						String[] arguments = command.split(" ");
 						if(arguments.length <= 1){
-							System.out.print("Usage:");
+							System.out.println("Usage:");
 						}
 						else{
 							if(processCommand(command)){
@@ -82,7 +82,7 @@ public class SFTPShell {
 						}							
 					}
 					else{
-						System.out.print("Unrecognized command");
+						System.out.println("Unrecognized command");
 					}
 					
 				}
@@ -111,12 +111,12 @@ public class SFTPShell {
 				// Take action based on ACK
 				// if ACK move to login, set status to true
 				out.println(command);
-				System.out.print("Client sent register command..");
+				System.out.println("Client sent register command..");
 				try {
 					if(in.readLine().contains("LOGIN")){
 						st.state = sftp_state.LOGIN;
 						status = true;
-						System.out.print("Client received login command..");
+						System.out.println("Client received login command..");
 					}
 					else{
 						st.state = sftp_state.REGISTER;
@@ -141,9 +141,11 @@ public class SFTPShell {
 				// if ACK move to download, set status to true
 				out.println(command);
 				try {
+					System.out.println("Waiting for DOWNLOAD from server");
 					if(in.readLine().contains("DOWNLOAD")){
 						st.state = sftp_state.DOWNLOAD;
 						status = true;
+						System.out.println("Received DOWNLOAD command");
 					}
 					else{
 						st.state = sftp_state.LOGIN;
@@ -164,6 +166,7 @@ public class SFTPShell {
 			}
 			break;
 		case DOWNLOAD :
+			System.out.println("In DOWNLOAD state");
 			if(command.contains("download")){
 				List<String> validFiles = null;
 				List<String> invalidFiles = null;
@@ -182,7 +185,7 @@ public class SFTPShell {
 					invalidFiles = downloadFiles.getInvalidFileNames();
 					if(validFiles == null || invalidFiles != null){
 						// invalid file, print
-						System.out.print("Error: the following files do not exist on server : ");
+						System.out.println("Error: the following files do not exist on server : ");
 						for(String s : invalidFiles){
 							System.out.print(s + " ");
 						}
