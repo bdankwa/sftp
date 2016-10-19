@@ -55,6 +55,53 @@ public class SFTPShell {
 				String command = stdinReader.readLine();
 				
 				if(!(command.contains("q"))){
+					if(st.state == sftp_state.REGISTER){						
+						String[] arguments = command.split(" ");
+						if(arguments.length != 2){
+							System.out.println("Usage:");
+						}
+						else{
+							command = "register" + " " + command;
+							processCommand(command);
+						}
+					}
+					else if(st.state == sftp_state.LOGIN){
+						String[] arguments = command.split(" ");
+						if(command.contains("register")){
+							processCommand(command);
+						}
+						else if(arguments.length != 2){
+							System.out.println("Usage:");
+						}
+						else{
+							command = "login" + " " + command;
+							processCommand(command);
+						}
+					}
+					else if(st.state == sftp_state.DOWNLOAD){
+						String[] arguments = command.split(" ");
+						if(arguments.length == 0){
+							System.out.println("Usage:");
+						}
+						else{
+							command = "download" + " " + command;
+							if(processCommand(command)){
+								// files downloaded successfully, terminate.
+								closeIOs();
+								break;
+							}
+						}						
+					}
+					else{
+						System.out.println("Unrecognized command");
+					}					
+				}
+				else{
+					out.println("quit");
+					break;
+				}
+				
+				/*if(!(command.contains("q"))){
 					if(command.contains("register")){
 						//String[] arguments = command.split(" ");
 						processCommand(command);					
@@ -88,7 +135,7 @@ public class SFTPShell {
 				}
 				else{
 					break;
-				}
+				}*/
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -141,11 +188,11 @@ public class SFTPShell {
 				// if ACK move to download, set status to true
 				out.println(command);
 				try {
-					System.out.println("Waiting for DOWNLOAD from server");
+					//System.out.println("Waiting for DOWNLOAD from server");
 					if(in.readLine().contains("DOWNLOAD")){
 						st.state = sftp_state.DOWNLOAD;
 						status = true;
-						System.out.println("Received DOWNLOAD command");
+						//System.out.println("Received DOWNLOAD command");
 					}
 					else{
 						st.state = sftp_state.LOGIN;

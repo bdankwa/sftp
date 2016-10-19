@@ -1,6 +1,7 @@
 package sftp;
 
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SFTPFile {
@@ -10,9 +11,9 @@ public class SFTPFile {
 	List<String> curruptFiles;
 	
 	public SFTPFile(){
-		validFileNames = null;
-		invalidFileNames = null;
-		curruptFiles = null;
+		validFileNames = new ArrayList<String>();
+		invalidFileNames = new ArrayList<String>();;
+		curruptFiles = new ArrayList<String>();;
 	}
 	
 	public boolean transmit(Socket socket, List<String> fileNames){
@@ -21,7 +22,7 @@ public class SFTPFile {
 		for(String s: fileNames){
 			
 			System.out.println("Server: sent : " + s + " to client");
-			validFileNames.add(s);
+			//validFileNames.add(s);
 			
 		}
 		
@@ -34,8 +35,8 @@ public class SFTPFile {
 		
 		System.out.println("Cleint: recevived files");
 		
-		curruptFiles = null;
-		
+		// Save the names of received files		
+	
 		return true;
 	}
 	

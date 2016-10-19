@@ -84,7 +84,7 @@ public class UserAccount {
 	private void openIOWrite(){
 		
 		try {
-			out = new BufferedWriter(new FileWriter("system"));
+			out = new BufferedWriter(new FileWriter("system", true));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

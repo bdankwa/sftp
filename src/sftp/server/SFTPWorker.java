@@ -23,8 +23,7 @@ public class SFTPWorker extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
+	}	
 	
 	public void run(){
 		SFTPFile file = null;
@@ -37,7 +36,7 @@ public class SFTPWorker extends Thread{
 		try {
 			while(true){
 				String clientCommand = in.readLine();
-				System.out.print(clientCommand);
+				//System.out.print(clientCommand);
 				if(clientCommand.contains("register")){
 					String[] registrationInfo = clientCommand.split(" ");
 					//process register
@@ -45,10 +44,10 @@ public class SFTPWorker extends Thread{
 					if(account.addUser(registrationInfo[1], registrationInfo[2])){
 						out.println("LOGIN");
 					}					
-					System.out.println("SENT LOGIN to client.");
+					//System.out.println("SENT LOGIN to client.");
 				}
 				else if(clientCommand.contains("login")){
-					System.out.println("about to authenticate");
+					//System.out.println("about to authenticate");
 					String[] userPass = clientCommand.split(" ");
 					//process login
 					// if successful, send DOWNLOAD
@@ -56,7 +55,7 @@ public class SFTPWorker extends Thread{
 						out.println("DOWNLOAD");
 						
 						file = new SFTPFile();
-						System.out.println("SENT DOWNLOAD to client.");
+						//System.out.println("SENT DOWNLOAD to client.");
 					}
 					else{
 						out.println("AUTH_FAILED");
@@ -79,6 +78,11 @@ public class SFTPWorker extends Thread{
 					}
 					
 					System.out.println("SENT SUCCESS to client.");
+					break;
+				}
+				else if(clientCommand.contains("quit")){
+					System.out.println("quiting.");
+					break;
 				}
 			}
 
