@@ -65,20 +65,16 @@ public class SFTPWorker extends Thread{
 				else if(clientCommand.contains("download")){
 					// process download
 					// if successful, send SUCCESS	
-					List<String> fileNames = null;
-					if(file != null){
-						if((fileNames = file.getValidFileNames(clientCommand.substring(9))) != null){
-							if(file.transmit(socket, fileNames)){
-								out.println("SUCCESS");
-							}
-						}
-						if((fileNames = file.getInvalidFileNames()) != null){
-							//TODO tell client these files don't exist
+					String[] files = clientCommand.split(" ");
+					String fileName = files[1];
+					
+					if(!fileName.contains(" ")){
+						if(file.transmit(socket, fileName)){
+							//out.println("SUCCESS");
 						}
 					}
 					
-					System.out.println("SENT SUCCESS to client.");
-					break;
+					System.out.println("SENT SUCCESS to client.");					
 				}
 				else if(clientCommand.contains("quit")){
 					System.out.println("quiting.");

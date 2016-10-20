@@ -18,12 +18,12 @@ public class SFTPShell {
 	private SFTPState st;
 	private BufferedReader   in;
 	private PrintWriter   out;
-	private SFTPFile downloadFiles;
+	private SFTPFile downloadFile;
 	
 	public SFTPShell(Socket sock){
 		this.socket = sock;
 		st = new SFTPState();
-		downloadFiles = new SFTPFile();
+		downloadFile = new SFTPFile();
 		try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -87,6 +87,7 @@ public class SFTPShell {
 							command = "download" + " " + command;
 							if(processCommand(command)){
 								// files downloaded successfully, terminate.
+								out.println("quit");
 								closeIOs();
 								break;
 							}
@@ -100,42 +101,6 @@ public class SFTPShell {
 					out.println("quit");
 					break;
 				}
-				
-				/*if(!(command.contains("q"))){
-					if(command.contains("register")){
-						//String[] arguments = command.split(" ");
-						processCommand(command);					
-					}
-					else if(command.contains("login")){
-						String[] arguments = command.split(" ");
-						if(arguments.length != 3){
-							System.out.println("Usage:");
-						}
-						else{
-							processCommand(command);
-						}							
-					}
-					else if(command.contains("download")){
-						String[] arguments = command.split(" ");
-						if(arguments.length <= 1){
-							System.out.println("Usage:");
-						}
-						else{
-							if(processCommand(command)){
-								// files downloaded successfully, terminate.
-								closeIOs();
-								break;
-							}
-						}							
-					}
-					else{
-						System.out.println("Unrecognized command");
-					}
-					
-				}
-				else{
-					break;
-				}*/
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -224,32 +189,31 @@ public class SFTPShell {
 				// Take action based on ACK
 				// if all good set status to true
 				// stay in download until quit.
-				out.println(command);				
-
-				if(downloadFiles.receive(socket)){
-					//TODO 
-					validFiles = downloadFiles.getValidFileNames(command.substring(9));
-					invalidFiles = downloadFiles.getInvalidFileNames();
-					if(validFiles == null || invalidFiles != null){
-						// invalid file, print
-						System.out.println("Error: the following files do not exist on server : ");
-						for(String s : invalidFiles){
-							System.out.print(s + " ");
-						}
-						status = false;
-					}
-					status = true;
-				}
-				else{ // Corrupt file
-					corruptFiles = downloadFiles.getCorruptFileNames();
-					// TODO Retry for a couple of times
-					//st.state = sftp_state.DOWNLOAD;
 					
-				}				
-			}
-			else{
-				System.out.println("You're already logged in, you can download files now.");
-				status = false;
+				String files = command.substring(9);
+				String[] fileNames = files.split(" ");
+				
+				for(String s : fileNames){
+					System.out.println("looping..");
+					if(!s.contains(" ")){
+						
+						out.println("download " + s);
+						
+						if(downloadFile.receive(socket, s)){
+							//TODO 
+							if(!downloadFile.receivedFile()){
+								System.out.println("Error: file " + s + " does not exist on server : ");
+							}
+							System.out.println("Cient downloaded file: " + s );
+						}
+						else{ // Corrupt file
+							// TODO Retry for a couple of times
+							//st.state = sftp_state.DOWNLOAD;
+							
+						}						
+					}
+				}
+				status = true;
 			}
 			break;			
 			
