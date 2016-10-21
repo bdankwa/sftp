@@ -14,9 +14,12 @@ public class SFTPWorker extends Thread{
 	private Socket socket;
 	private BufferedReader   in;
 	private PrintWriter   out;
+	private boolean corrupt;
 	
-	public SFTPWorker(Socket sock){
+	public SFTPWorker(Socket sock, boolean corrupt){
 		this.socket = sock;
+		this.corrupt = corrupt;
+		
 		try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -76,7 +79,7 @@ public class SFTPWorker extends Thread{
 					String fileName = files[1];
 					
 					if(!fileName.contains(" ")){
-						if(file.transmit(socket, fileName)){
+						if(file.transmit(socket, fileName, corrupt)){
 							//out.println("SUCCESS");
 						}
 					}

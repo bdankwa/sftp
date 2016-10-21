@@ -2,8 +2,8 @@
 SERVER_BIN=$PWD/src/sftp/server/bin
 SERVER_CLASS_DIR=$SERVER_BIN/sftp/server
 if [[ $# < 1 ]]; then
-	echo "Please provide port number for application."
-	echo "Usage: ./startserver port"
+	echo "Please provide correct arguments."
+	echo "Usage: ./startserver corrupt (1 = simulate corrupt file, 0 = don't simulate corrupt file) "
 	exit
 fi
 SERVER_CLASS="$SERVER_CLASS_DIR/SFTPServer.class"

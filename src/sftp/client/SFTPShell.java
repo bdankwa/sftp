@@ -22,12 +22,10 @@ public class SFTPShell {
 	private PrintWriter   out;
 	private SFTPFile downloadFile;
 	int retries;
-	boolean corruptFile;
 	
-	public SFTPShell(Socket sock, int retries, boolean corruptFile){
+	public SFTPShell(Socket sock, int retries){
 		this.socket = sock;
 		this.retries = retries;	
-		this.corruptFile = corruptFile;
 		
 		st = new SFTPState();
 		downloadFile = new SFTPFile();
@@ -97,9 +95,9 @@ public class SFTPShell {
 							command = "download" + " " + command;
 							if(processCommand(command)){
 								// files downloaded successfully, terminate.
-								out.println(SFTPCrypto.encrypt("quit"));
-								closeIOs();
-								break;
+								//out.println(SFTPCrypto.encrypt("quit"));
+								//closeIOs();
+								//break;
 							}
 						}						
 					}
@@ -109,6 +107,7 @@ public class SFTPShell {
 				}
 				else{
 					out.println(SFTPCrypto.encrypt("quit"));
+					closeIOs();
 					break;
 				}
 				
@@ -215,7 +214,7 @@ public class SFTPShell {
 						for(int i=0; i< retries; i++){
 							out.println(SFTPCrypto.encrypt(("download " + s)));
 							
-							if(downloadFile.receive(socket, s, corruptFile)){
+							if(downloadFile.receive(socket, s)){
 								//TODO 
 								if(!downloadFile.receivedFile()){
 									System.out.println("Error: file " + s + " does not exist on server : ");
@@ -228,11 +227,12 @@ public class SFTPShell {
 							else{ // Corrupt file
 								// TODO Retry for a couple of times
 								//st.state = sftp_state.DOWNLOAD;
-								if(i <= (retries - 1)){
-									System.out.println("File :" + s + " was currupted in transit, retrying... " + i );
+								if(i <= (retries - 2)){
+									System.out.println("File :" + s + " was currupted in transit, retrying... " + (i+1) );
 								}
 								else{
-									System.out.println("Unable to download" + s + " after " + i + " tries." );
+									System.out.println("File :" + s + " was currupted in transit, retrying... " + (i+1) );
+									System.out.println("Unable to download " + s + " after " + (i+1) + " tries." );
 								}								
 							}							
 						}												

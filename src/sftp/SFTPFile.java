@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 
 
@@ -28,7 +29,7 @@ public class SFTPFile {
 
 	}
 	
-	public boolean transmit(Socket socket, String fileName){
+	public boolean transmit(Socket socket, String fileName, boolean curruptFile){
 		
 		boolean status = false;
 		
@@ -48,8 +49,14 @@ public class SFTPFile {
 				fileBytes[0] = FILE_ON_DISK;
 				bis.read(fileBytes, 1, (int)f.length());
 				
+				byte[] cypherText = SFTPCrypto.encrypt(fileBytes);
+				
+				if(curruptFile){
+					cypherText[1] = 0x25;
+				}
+				
 				//TODO encrypt file
-				out.write(SFTPCrypto.encrypt(fileBytes));
+				out.write(cypherText);
 				
 				out.flush();
 				fis.close();
@@ -77,11 +84,10 @@ public class SFTPFile {
 		return status;
 	}
 	
-	public boolean receive(Socket socket, String fileName, boolean curruptFile){
+	public boolean receive(Socket socket, String fileName){
 		
 		boolean decryptionStatus = false;
-		boolean oneShort = true;
-		
+	
 	    FileOutputStream fos;
 	    BufferedOutputStream bos;
 	    BufferedInputStream bis;
@@ -103,16 +109,7 @@ public class SFTPFile {
 			System.out.println("offset : " + offset);
 			
 			//TODO dycrypt file and set decryptionStatus
-			byte[] cypherBytes = Arrays.copyOf(tempBytes, bytesRead);
-			
-			if(curruptFile && oneShort){
-				cypherBytes[1] = 0x25;
-				decryptionStatus = false;
-				oneShort = false;
-			}
-			else{
-				decryptionStatus = true;
-			}
+			byte[] cypherBytes = Arrays.copyOf(tempBytes, bytesRead);			
 						
 			byte[] fileBytes = SFTPCrypto.decrypt(cypherBytes);
 			
@@ -124,13 +121,18 @@ public class SFTPFile {
 				bos.flush();
 				System.out.println("Cleint received : " + fileName);
 				foundFile = true;
+				decryptionStatus = true;
 				fos.close();
 				bos.close();
 			}
 			else if(fileBytes[0] == FILE_NOT_ON_DISK){
 				System.out.println("Cleint : server couldn't fine " + fileName);
 				foundFile = false;
-			}			
+				decryptionStatus = true;
+			}
+			else{
+				decryptionStatus = false;
+			}
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
