@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 
+import sftp.SFTPCrypto;
 import sftp.SFTPFile;
 
 public class SFTPWorker extends Thread{
@@ -35,14 +36,17 @@ public class SFTPWorker extends Thread{
 		UserAccount account = new UserAccount();
 		try {
 			while(true){
-				String clientCommand = in.readLine();
+				//String clientCommand = in.readLine();
+				String clientCommand = SFTPCrypto.decrypt(in.readLine());
 				//System.out.print(clientCommand);
 				if(clientCommand.contains("register")){
 					String[] registrationInfo = clientCommand.split(" ");
 					//process register
 					// if successful, send LOGIN
-					if(account.addUser(registrationInfo[1], registrationInfo[2])){
-						out.println("LOGIN");
+					if(account.addUser(SFTPCrypto.encrypt(registrationInfo[1]), 
+							SFTPCrypto.encrypt(registrationInfo[2]))){
+						String response = SFTPCrypto.encrypt("LOGIN");
+						out.println(response);
 					}					
 					//System.out.println("SENT LOGIN to client.");
 				}
@@ -51,14 +55,17 @@ public class SFTPWorker extends Thread{
 					String[] userPass = clientCommand.split(" ");
 					//process login
 					// if successful, send DOWNLOAD
-					if(account.authenticateUser(userPass[1], userPass[2])){
-						out.println("DOWNLOAD");
+					if(account.authenticateUser(SFTPCrypto.encrypt(userPass[1]),
+							SFTPCrypto.encrypt(userPass[2]))){
+						String response = SFTPCrypto.encrypt("DOWNLOAD");
+						out.println(response);
 						
 						file = new SFTPFile();
 						//System.out.println("SENT DOWNLOAD to client.");
 					}
 					else{
-						out.println("AUTH_FAILED");
+						String response = SFTPCrypto.encrypt("AUTH_FAILED");
+						out.println(response);
 					}
 
 				}
@@ -82,7 +89,7 @@ public class SFTPWorker extends Thread{
 				}
 			}
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

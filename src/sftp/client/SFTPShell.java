@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 
+import sftp.SFTPCrypto;
+//import sftp.SFTPCrypto;
 import sftp.SFTPFile;
 import sftp.SFTPState;
 import sftp.SFTPState.sftp_state;
@@ -51,6 +53,9 @@ public class SFTPShell {
 			}
 			System.out.print(prompt);
 			try {
+				/*byte[] test = SFTPCrypto.encrypt("plaintext".getBytes());
+				System.out.println(new String(SFTPCrypto.decrypt(test)));*/
+
 				stdinReader = new BufferedReader(new InputStreamReader(System.in));
 				String command = stdinReader.readLine();
 				
@@ -87,7 +92,7 @@ public class SFTPShell {
 							command = "download" + " " + command;
 							if(processCommand(command)){
 								// files downloaded successfully, terminate.
-								out.println("quit");
+								out.println(SFTPCrypto.encrypt("quit"));
 								closeIOs();
 								break;
 							}
@@ -98,11 +103,14 @@ public class SFTPShell {
 					}					
 				}
 				else{
-					out.println("quit");
+					out.println(SFTPCrypto.encrypt("quit"));
 					break;
 				}
 				
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -111,7 +119,7 @@ public class SFTPShell {
 	
 	}
 	
-	private boolean processCommand(String command){
+	private boolean processCommand(String command) throws Exception{
 		boolean status = false;	
 		
 		switch(st.state){
@@ -122,10 +130,11 @@ public class SFTPShell {
 				// Receive ACK
 				// Take action based on ACK
 				// if ACK move to login, set status to true
-				out.println(command);
+				out.println(SFTPCrypto.encrypt(command));
 				System.out.println("Client sent register command..");
 				try {
-					if(in.readLine().contains("LOGIN")){
+					String response = SFTPCrypto.decrypt(in.readLine());
+					if(response.contains("LOGIN")){
 						st.state = sftp_state.LOGIN;
 						status = true;
 						System.out.println("Client received login command..");
@@ -151,10 +160,11 @@ public class SFTPShell {
 				// Receive ACK
 				// Take action based on ACK
 				// if ACK move to download, set status to true
-				out.println(command);
+				out.println(SFTPCrypto.encrypt(command));
 				try {
 					//System.out.println("Waiting for DOWNLOAD from server");
-					if(in.readLine().contains("DOWNLOAD")){
+					String response = SFTPCrypto.decrypt(in.readLine());
+					if(response.contains("DOWNLOAD")){
 						st.state = sftp_state.DOWNLOAD;
 						status = true;
 						//System.out.println("Received DOWNLOAD command");
@@ -197,7 +207,7 @@ public class SFTPShell {
 					System.out.println("looping..");
 					if(!s.contains(" ")){
 						
-						out.println("download " + s);
+						out.println(SFTPCrypto.encrypt(("download " + s)));
 						
 						if(downloadFile.receive(socket, s)){
 							//TODO 

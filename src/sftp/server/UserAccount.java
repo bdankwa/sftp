@@ -29,6 +29,7 @@ public class UserAccount {
 		synchronized(this){			
 			try {
 				out.write(username + " " + password);
+				out.newLine();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -54,7 +55,7 @@ public class SFTPFile {
 				bis.read(fileBytes, 1, (int)f.length());
 				
 				//TODO encrypt file
-				out.write(fileBytes);
+				out.write(SFTPCrypto.encrypt(fileBytes));
 				
 				out.flush();
 				fis.close();
@@ -71,7 +72,7 @@ public class SFTPFile {
 				status = false;
 			}
 			
-		}catch (IOException e) {
+		}catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
@@ -95,20 +96,24 @@ public class SFTPFile {
 		try {
 			is = socket.getInputStream();
 			
-			byte[] fileBytes = new byte[MAX_FILE_SIZE];
-			
+			byte[] tempBytes = new byte[MAX_FILE_SIZE];
+						
 			bis = new BufferedInputStream(is);
-			bytesRead = bis.read(fileBytes, offset, fileBytes.length);
+			bytesRead = bis.read(tempBytes, offset, tempBytes.length);
 			offset = bytesRead;
 						
 			System.out.println("offset : " + offset);
 			
 			//TODO dycrypt file and set decryptionStatus
+			byte[] cypherBytes = Arrays.copyOf(tempBytes, bytesRead);
+			
+			byte[] fileBytes = SFTPCrypto.decrypt(cypherBytes);
 			
 			if(fileBytes[0] == FILE_ON_DISK){
 				fos = new FileOutputStream(fileName);
 				bos = new BufferedOutputStream(fos);
-				bos.write(fileBytes, 1, offset-1);
+				System.out.println("fileBytes len : " + fileBytes.length);
+				bos.write(fileBytes, 1, fileBytes.length -1);
 				bos.flush();
 				System.out.println("Cleint received : " + fileName);
 				foundFile = true;
@@ -120,7 +125,7 @@ public class SFTPFile {
 				foundFile = false;
 			}			
 		
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
