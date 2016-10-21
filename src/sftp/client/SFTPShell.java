@@ -21,9 +21,14 @@ public class SFTPShell {
 	private BufferedReader   in;
 	private PrintWriter   out;
 	private SFTPFile downloadFile;
+	int retries;
+	boolean corruptFile;
 	
-	public SFTPShell(Socket sock){
+	public SFTPShell(Socket sock, int retries, boolean corruptFile){
 		this.socket = sock;
+		this.retries = retries;	
+		this.corruptFile = corruptFile;
+		
 		st = new SFTPState();
 		downloadFile = new SFTPFile();
 		try {
@@ -207,26 +212,35 @@ public class SFTPShell {
 					System.out.println("looping..");
 					if(!s.contains(" ")){
 						
-						out.println(SFTPCrypto.encrypt(("download " + s)));
-						
-						if(downloadFile.receive(socket, s)){
-							//TODO 
-							if(!downloadFile.receivedFile()){
-								System.out.println("Error: file " + s + " does not exist on server : ");
-							}
-							System.out.println("Cient downloaded file: " + s );
-						}
-						else{ // Corrupt file
-							// TODO Retry for a couple of times
-							//st.state = sftp_state.DOWNLOAD;
+						for(int i=0; i< retries; i++){
+							out.println(SFTPCrypto.encrypt(("download " + s)));
 							
-						}						
+							if(downloadFile.receive(socket, s, corruptFile)){
+								//TODO 
+								if(!downloadFile.receivedFile()){
+									System.out.println("Error: file " + s + " does not exist on server : ");
+								}
+								else{
+									System.out.println("Cient downloaded file: " + s );
+								}								
+								break;
+							}
+							else{ // Corrupt file
+								// TODO Retry for a couple of times
+								//st.state = sftp_state.DOWNLOAD;
+								if(i <= (retries - 1)){
+									System.out.println("File :" + s + " was currupted in transit, retrying... " + i );
+								}
+								else{
+									System.out.println("Unable to download" + s + " after " + i + " tries." );
+								}								
+							}							
+						}												
 					}
 				}
 				status = true;
 			}
 			break;			
-			
 		
 		}
 		

@@ -18,10 +18,6 @@ import java.util.List;
 
 public class SFTPFile {
 	
-	List<String> validFileNames;
-	List<String> invalidFileNames;
-	List<String> curruptFiles;
-	
 	boolean foundFile = false;
 	
 	public final static int MAX_FILE_SIZE = 5120000; // 5MB
@@ -29,9 +25,7 @@ public class SFTPFile {
 	public final static byte FILE_NOT_ON_DISK = (byte) 0xDD; 
 	
 	public SFTPFile(){
-		validFileNames = new ArrayList<String>();
-		invalidFileNames = new ArrayList<String>();;
-		curruptFiles = new ArrayList<String>();;
+
 	}
 	
 	public boolean transmit(Socket socket, String fileName){
@@ -67,8 +61,11 @@ public class SFTPFile {
 				
 			}
 			else{
-				byte fileBytes = FILE_NOT_ON_DISK;
-				out.write(fileBytes);
+				byte[] fileBytes = new byte[1];
+				for(int i=0; i < 1; i++){
+					fileBytes[i] = FILE_NOT_ON_DISK;
+				}
+				out.write(SFTPCrypto.encrypt(fileBytes));
 				status = false;
 			}
 			
@@ -80,9 +77,10 @@ public class SFTPFile {
 		return status;
 	}
 	
-	public boolean receive(Socket socket, String fileName){
+	public boolean receive(Socket socket, String fileName, boolean curruptFile){
 		
 		boolean decryptionStatus = false;
+		boolean oneShort = true;
 		
 	    FileOutputStream fos;
 	    BufferedOutputStream bos;
@@ -107,6 +105,15 @@ public class SFTPFile {
 			//TODO dycrypt file and set decryptionStatus
 			byte[] cypherBytes = Arrays.copyOf(tempBytes, bytesRead);
 			
+			if(curruptFile && oneShort){
+				cypherBytes[1] = 0x25;
+				decryptionStatus = false;
+				oneShort = false;
+			}
+			else{
+				decryptionStatus = true;
+			}
+						
 			byte[] fileBytes = SFTPCrypto.decrypt(cypherBytes);
 			
 			if(fileBytes[0] == FILE_ON_DISK){
