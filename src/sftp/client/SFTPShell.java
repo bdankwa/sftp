@@ -66,7 +66,7 @@ public class SFTPShell {
 					if(st.state == sftp_state.REGISTER){						
 						String[] arguments = command.split(" ");
 						if(arguments.length != 2){
-							System.out.println("Usage:");
+							System.out.println("Usage: username password");
 						}
 						else{
 							command = "register" + " " + command;
@@ -79,7 +79,7 @@ public class SFTPShell {
 							processCommand(command);
 						}
 						else if(arguments.length != 2){
-							System.out.println("Usage:");
+							System.out.println("Usage: username password");
 						}
 						else{
 							command = "login" + " " + command;
@@ -88,8 +88,8 @@ public class SFTPShell {
 					}
 					else if(st.state == sftp_state.DOWNLOAD){
 						String[] arguments = command.split(" ");
-						if(arguments.length == 0){
-							System.out.println("Usage:");
+						if(arguments.length == 0 || command.contains("register")){
+							System.out.println("Usage: file1, file2....filen");
 						}
 						else{
 							command = "download" + " " + command;
@@ -192,7 +192,7 @@ public class SFTPShell {
 			}
 			break;
 		case DOWNLOAD :
-			System.out.println("In DOWNLOAD state");
+			//System.out.println("In DOWNLOAD state");
 			if(command.contains("download")){
 				List<String> validFiles = null;
 				List<String> invalidFiles = null;
@@ -208,7 +208,7 @@ public class SFTPShell {
 				String[] fileNames = files.split(" ");
 				
 				for(String s : fileNames){
-					System.out.println("looping..");
+					//System.out.println("looping..");
 					if(!s.contains(" ")){
 						
 						for(int i=0; i< retries; i++){
@@ -220,7 +220,7 @@ public class SFTPShell {
 									System.out.println("Error: file " + s + " does not exist on server : ");
 								}
 								else{
-									System.out.println("Cient downloaded file: " + s );
+									System.out.println("Client downloaded file: " + s );
 								}								
 								break;
 							}

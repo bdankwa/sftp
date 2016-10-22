@@ -62,7 +62,7 @@ public class SFTPFile {
 				fis.close();
 				bis.close();
 
-				System.out.println("Server: sent : " + fileName + "of length " + f.length() + " to client" );
+				//System.out.println("Server: sent : " + fileName + "of length " + f.length() + " to client" );
 				
 				status = true;
 				
@@ -106,7 +106,7 @@ public class SFTPFile {
 			bytesRead = bis.read(tempBytes, offset, tempBytes.length);
 			offset = bytesRead;
 						
-			System.out.println("offset : " + offset);
+			//System.out.println("offset : " + offset);
 			
 			//TODO dycrypt file and set decryptionStatus
 			byte[] cypherBytes = Arrays.copyOf(tempBytes, bytesRead);			
@@ -116,17 +116,17 @@ public class SFTPFile {
 			if(fileBytes[0] == FILE_ON_DISK){
 				fos = new FileOutputStream(fileName);
 				bos = new BufferedOutputStream(fos);
-				System.out.println("fileBytes len : " + fileBytes.length);
+				//System.out.println("fileBytes len : " + fileBytes.length);
 				bos.write(fileBytes, 1, fileBytes.length -1);
 				bos.flush();
-				System.out.println("Cleint received : " + fileName);
+				//System.out.println("Cleint received : " + fileName);
 				foundFile = true;
 				decryptionStatus = true;
 				fos.close();
 				bos.close();
 			}
 			else if(fileBytes[0] == FILE_NOT_ON_DISK){
-				System.out.println("Cleint : server couldn't fine " + fileName);
+				//System.out.println("Cleint : server couldn't fine " + fileName);
 				foundFile = false;
 				decryptionStatus = true;
 			}

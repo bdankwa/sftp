@@ -56,13 +56,14 @@ public class UserAccount {
         try {
 			while((line = in.readLine()) != null){
 				credentials = line.split(" "); 
-				System.out.println("Account cred : " + credentials[0] + " " + credentials[1]);
+				//System.out.println("Account cred : " + credentials[0] + " " + credentials[1]);
 				if(credentials[0].equals(username) && credentials[1].equals(password)){
 					returnVal = true;
+					System.out.println("User: " + credentials[0] + " successfully authenticated ");
 					break;
 				}
 			}
-			System.out.println("Account input : " + username + " " + password);
+			//System.out.println("Account input : " + username + " " + password);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

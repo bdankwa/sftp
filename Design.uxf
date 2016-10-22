@@ -89,7 +89,7 @@
       <x>490</x>
       <y>230</y>
       <w>100</w>
-      <h>40</h>
+      <h>50</h>
     </coordinates>
     <panel_attributes>SFTPWorker
 --
@@ -104,7 +104,9 @@
       <w>30</w>
       <h>110</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <panel_attributes>lt=&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
     <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
   </element>
   <element>
@@ -113,9 +115,11 @@
       <x>150</x>
       <y>230</y>
       <w>120</w>
-      <h>30</h>
+      <h>40</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <panel_attributes>lt=&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
     <additional_attributes>100.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
@@ -124,9 +128,11 @@
       <x>50</x>
       <y>280</y>
       <w>220</w>
-      <h>90</h>
+      <h>100</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <panel_attributes>lt=&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
     <additional_attributes>200.0;70.0;10.0;70.0;10.0;10.0</additional_attributes>
   </element>
   <element>
@@ -146,9 +152,11 @@
       <x>340</x>
       <y>230</y>
       <w>170</w>
-      <h>30</h>
+      <h>40</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <panel_attributes>lt=&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
     <additional_attributes>10.0;10.0;150.0;10.0</additional_attributes>
   </element>
   <element>
@@ -159,7 +167,9 @@
       <w>100</w>
       <h>120</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <panel_attributes>lt=&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
     <additional_attributes>80.0;100.0;80.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
@@ -179,11 +189,13 @@ m2=1</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>340</x>
-      <y>260</y>
+      <y>270</y>
       <w>220</w>
       <h>110</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;90.0;200.0;90.0;200.0;10.0</additional_attributes>
+    <panel_attributes>lt=&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;80.0;200.0;80.0;200.0;10.0</additional_attributes>
   </element>
 </diagram>

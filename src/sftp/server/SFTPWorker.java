@@ -15,10 +15,12 @@ public class SFTPWorker extends Thread{
 	private BufferedReader   in;
 	private PrintWriter   out;
 	private boolean corrupt;
+	static int clientID;
 	
 	public SFTPWorker(Socket sock, boolean corrupt){
 		this.socket = sock;
 		this.corrupt = corrupt;
+		//this.clientID = 0;
 		
 		try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -31,7 +33,7 @@ public class SFTPWorker extends Thread{
 	
 	public void run(){
 		SFTPFile file = null;
-		System.out.println("Some client connected...");
+		System.out.println("Client " + (++clientID) + " connected.");
 		// TODO Read parameters from socket stream
 		// Read files from disk
 		// Encrypt files
@@ -84,7 +86,7 @@ public class SFTPWorker extends Thread{
 						}
 					}
 					
-					System.out.println("SENT SUCCESS to client.");					
+					//System.out.println("SENT SUCCESS to client.");					
 				}
 				else if(clientCommand.contains("quit")){
 					System.out.println("quiting.");
