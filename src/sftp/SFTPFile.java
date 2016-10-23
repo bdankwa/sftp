@@ -62,7 +62,7 @@ public class SFTPFile {
 				fis.close();
 				bis.close();
 
-				//System.out.println("Server: sent : " + fileName + "of length " + f.length() + " to client" );
+				System.out.println("Server sent (" + fileName + ") of length " + f.length() + " bytes to client" );
 				
 				status = true;
 				

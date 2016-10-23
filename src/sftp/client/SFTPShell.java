@@ -62,27 +62,27 @@ public class SFTPShell {
 				stdinReader = new BufferedReader(new InputStreamReader(System.in));
 				String command = stdinReader.readLine();
 				
-				if(!(command.contains("q"))){
+				if(!(command.equals("q"))){
 					if(st.state == sftp_state.REGISTER){						
 						String[] arguments = command.split(" ");
 						if(arguments.length != 2){
 							System.out.println("Usage: username password");
 						}
 						else{
-							command = "register" + " " + command;
+							command = "#register" + " " + command;
 							processCommand(command);
 						}
 					}
 					else if(st.state == sftp_state.LOGIN){
 						String[] arguments = command.split(" ");
 						if(command.contains("register")){
-							processCommand(command);
+							processCommand("#"+command);
 						}
 						else if(arguments.length != 2){
 							System.out.println("Usage: username password");
 						}
 						else{
-							command = "login" + " " + command;
+							command = "#login" + " " + command;
 							processCommand(command);
 						}
 					}
@@ -92,7 +92,8 @@ public class SFTPShell {
 							System.out.println("Usage: file1, file2....filen");
 						}
 						else{
-							command = "download" + " " + command;
+							command = "#download" + " " + command;
+							//System.out.println("Download " + command);
 							if(processCommand(command)){
 								// files downloaded successfully, terminate.
 								//out.println(SFTPCrypto.encrypt("quit"));
@@ -106,7 +107,7 @@ public class SFTPShell {
 					}					
 				}
 				else{
-					out.println(SFTPCrypto.encrypt("quit"));
+					out.println(SFTPCrypto.encrypt("#quit"));
 					closeIOs();
 					break;
 				}
@@ -129,7 +130,7 @@ public class SFTPShell {
 		switch(st.state){
 		case REGISTER :
 			String[] arguments = command.split(" ");
-			if(command.contains("register") && (arguments.length == 3)){
+			if(command.contains("#register") && (arguments.length == 3)){
 				//TODO send command to server
 				// Receive ACK
 				// Take action based on ACK
@@ -159,7 +160,7 @@ public class SFTPShell {
 			}
 			break;
 		case LOGIN :
-			if(command.contains("login")){
+			if(command.contains("#login")){
 				//TODO send command to server
 				// Receive ACK
 				// Take action based on ACK
@@ -183,7 +184,7 @@ public class SFTPShell {
 					e.printStackTrace();
 				}				
 			}
-			else if(command.contains("register")){
+			else if(command.contains("#register")){
 				st.state = sftp_state.REGISTER;
 			}
 			else{
@@ -193,7 +194,7 @@ public class SFTPShell {
 			break;
 		case DOWNLOAD :
 			//System.out.println("In DOWNLOAD state");
-			if(command.contains("download")){
+			if(command.contains("#download")){
 				List<String> validFiles = null;
 				List<String> invalidFiles = null;
 				List<String> corruptFiles = null;
@@ -204,7 +205,7 @@ public class SFTPShell {
 				// if all good set status to true
 				// stay in download until quit.
 					
-				String files = command.substring(9);
+				String files = command.substring(10);
 				String[] fileNames = files.split(" ");
 				
 				for(String s : fileNames){
@@ -212,7 +213,7 @@ public class SFTPShell {
 					if(!s.contains(" ")){
 						
 						for(int i=0; i< retries; i++){
-							out.println(SFTPCrypto.encrypt(("download " + s)));
+							out.println(SFTPCrypto.encrypt(("#download " + s)));
 							
 							if(downloadFile.receive(socket, s)){
 								//TODO 
@@ -220,7 +221,7 @@ public class SFTPShell {
 									System.out.println("Error: file " + s + " does not exist on server : ");
 								}
 								else{
-									System.out.println("Client downloaded file: " + s );
+									System.out.println("Client downloaded (" + s + ")." );
 								}								
 								break;
 							}

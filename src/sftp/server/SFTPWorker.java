@@ -44,7 +44,7 @@ public class SFTPWorker extends Thread{
 				//String clientCommand = in.readLine();
 				String clientCommand = SFTPCrypto.decrypt(in.readLine());
 				//System.out.print(clientCommand);
-				if(clientCommand.contains("register")){
+				if(clientCommand.contains("#register")){
 					String[] registrationInfo = clientCommand.split(" ");
 					//process register
 					// if successful, send LOGIN
@@ -55,7 +55,7 @@ public class SFTPWorker extends Thread{
 					}					
 					//System.out.println("SENT LOGIN to client.");
 				}
-				else if(clientCommand.contains("login")){
+				else if(clientCommand.contains("#login")){
 					//System.out.println("about to authenticate");
 					String[] userPass = clientCommand.split(" ");
 					//process login
@@ -74,9 +74,10 @@ public class SFTPWorker extends Thread{
 					}
 
 				}
-				else if(clientCommand.contains("download")){
+				else if(clientCommand.contains("#download")){
 					// process download
 					// if successful, send SUCCESS	
+					//System.out.println("worker " + clientCommand);
 					String[] files = clientCommand.split(" ");
 					String fileName = files[1];
 					
@@ -88,7 +89,7 @@ public class SFTPWorker extends Thread{
 					
 					//System.out.println("SENT SUCCESS to client.");					
 				}
-				else if(clientCommand.contains("quit")){
+				else if(clientCommand.contains("#quit")){
 					System.out.println("quiting.");
 					break;
 				}
