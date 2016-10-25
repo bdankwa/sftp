@@ -66,7 +66,7 @@ public class SFTPShell {
 					if(st.state == sftp_state.REGISTER){						
 						String[] arguments = command.split(" ");
 						if(arguments.length != 2){
-							System.out.println("Usage: username password");
+							System.out.println("Usage: username password. (q to quit)");
 						}
 						else{
 							command = "#register" + " " + command;
@@ -79,7 +79,7 @@ public class SFTPShell {
 							processCommand("#"+command);
 						}
 						else if(arguments.length != 2){
-							System.out.println("Usage: username password");
+							System.out.println("Usage: username password. (q to quit)");
 						}
 						else{
 							command = "#login" + " " + command;
@@ -89,7 +89,7 @@ public class SFTPShell {
 					else if(st.state == sftp_state.DOWNLOAD){
 						String[] arguments = command.split(" ");
 						if(arguments.length == 0 || command.contains("register")){
-							System.out.println("Usage: file1, file2....filen");
+							System.out.println("Usage: file1, file2....filen. (q to quit)");
 						}
 						else{
 							command = "#download" + " " + command;
@@ -103,7 +103,7 @@ public class SFTPShell {
 						}						
 					}
 					else{
-						System.out.println("Unrecognized command");
+						System.out.println("Unrecognized command. (q to quit)");
 					}					
 				}
 				else{
@@ -129,20 +129,20 @@ public class SFTPShell {
 		
 		switch(st.state){
 		case REGISTER :
-			String[] arguments = command.split(" ");
-			if(command.contains("#register") && (arguments.length == 3)){
+			String[] reg_arguments = command.split(" ");
+			if(command.contains("#register") && (reg_arguments.length == 3)){
 				//TODO send command to server
 				// Receive ACK
 				// Take action based on ACK
 				// if ACK move to login, set status to true
 				out.println(SFTPCrypto.encrypt(command));
-				System.out.println("Client sent register command..");
+				//System.out.println("Client sent register command..");
 				try {
 					String response = SFTPCrypto.decrypt(in.readLine());
 					if(response.contains("LOGIN")){
 						st.state = sftp_state.LOGIN;
 						status = true;
-						System.out.println("Client received login command..");
+						System.out.println("User "+ reg_arguments[1] + " successfully registered, please log in..(q to quit)");
 					}
 					else{
 						st.state = sftp_state.REGISTER;
@@ -160,6 +160,7 @@ public class SFTPShell {
 			}
 			break;
 		case LOGIN :
+			String[] lgin_arguments = command.split(" ");
 			if(command.contains("#login")){
 				//TODO send command to server
 				// Receive ACK
@@ -172,11 +173,11 @@ public class SFTPShell {
 					if(response.contains("DOWNLOAD")){
 						st.state = sftp_state.DOWNLOAD;
 						status = true;
-						//System.out.println("Received DOWNLOAD command");
+						System.out.println("User "+ lgin_arguments[1] + " successfully authenticated, please enter names of files to download..(q to quit)");
 					}
 					else{
 						st.state = sftp_state.LOGIN;
-						System.out.println("Authentication failed on server, please try again");
+						System.out.println("Authentication failed on server, please try again..(q to quit)");
 						status = false;
 					}
 				} catch (IOException e) {
@@ -188,7 +189,7 @@ public class SFTPShell {
 				st.state = sftp_state.REGISTER;
 			}
 			else{
-				System.out.println("Please log in to the system to download files");
+				System.out.println("Please log in to the system to download files. (q to quit)");
 				status = false;
 			}
 			break;
@@ -218,7 +219,7 @@ public class SFTPShell {
 							if(downloadFile.receive(socket, s)){
 								//TODO 
 								if(!downloadFile.receivedFile()){
-									System.out.println("Error: file " + s + " does not exist on server : ");
+									System.out.println("Error: file " + s + " does not exist on server..(q to quit) ");
 								}
 								else{
 									System.out.println("Client downloaded (" + s + ")." );
@@ -233,7 +234,7 @@ public class SFTPShell {
 								}
 								else{
 									System.out.println("File :" + s + " was currupted in transit, retrying... " + (i+1) );
-									System.out.println("Unable to download " + s + " after " + (i+1) + " tries." );
+									System.out.println("Unable to download " + s + " after " + (i+1) + " tries.." + "(q to quit)" );
 								}								
 							}							
 						}												

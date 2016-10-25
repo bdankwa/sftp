@@ -33,7 +33,9 @@ public class SFTPWorker extends Thread{
 	
 	public void run(){
 		SFTPFile file = null;
-		System.out.println("Client " + (++clientID) + " connected.");
+		synchronized(this){
+			System.out.println("Client " + (++clientID) + " connected.");
+		}
 		// TODO Read parameters from socket stream
 		// Read files from disk
 		// Encrypt files

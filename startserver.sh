@@ -1,5 +1,5 @@
 #!/bin/bash
-SERVER_BIN=$PWD/src/sftp/server/bin
+SERVER_BIN=$PWD/bin
 SERVER_CLASS_DIR=$SERVER_BIN/sftp/server
 if [[ $# < 1 ]]; then
 	echo "Please provide correct arguments."

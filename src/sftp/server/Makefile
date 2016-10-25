@@ -1,5 +1,5 @@
 
-BIN_DIR = bin/
+BIN_DIR = ../../../bin
 SERVER_DIR = ./
 COMMON_DIR = ../
 

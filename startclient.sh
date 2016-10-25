@@ -1,5 +1,5 @@
 #!/bin/bash
-CLIENT_BIN=$PWD/src/sftp/client/bin
+CLIENT_BIN=$PWD/bin
 CLIENT_CLASS_DIR=$CLIENT_BIN/sftp/client
 if [[ $# < 2 ]]; then
 	echo "Please provide correct arguments"
@@ -16,5 +16,5 @@ if [ ! -f "$CLIENT_CLASS" ]; then
 fi
 cd $CLIENT_BIN
 #This must be run from /bin
-java -cp . -Djava.security.policy=policy sftp.client.SFTPClient $1 $2 $3
+java -cp . -Djava.security.policy=policy sftp.client.SFTPClient $1 $2
 echo "sftp client up.."
