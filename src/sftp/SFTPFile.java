@@ -103,10 +103,10 @@ public class SFTPFile {
 			byte[] tempBytes = new byte[MAX_FILE_SIZE];
 						
 			bis = new BufferedInputStream(is);
-			bytesRead = bis.read(tempBytes, offset, tempBytes.length);
+			bytesRead = bis.read(tempBytes, 0, tempBytes.length);
 			offset = bytesRead;
 						
-			//System.out.println("offset : " + offset);
+			System.out.println("offset : " + offset);
 			
 			//TODO dycrypt file and set decryptionStatus
 			byte[] cypherBytes = Arrays.copyOf(tempBytes, bytesRead);			

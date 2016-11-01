@@ -93,6 +93,9 @@ public class SFTPWorker extends Thread{
 				}
 				else if(clientCommand.contains("#quit")){
 					System.out.println("quiting.");
+					out.close();
+					in.close();
+					socket.close();
 					break;
 				}
 			}
